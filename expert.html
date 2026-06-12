@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DigitalEdge — Цифровая система для эксперта</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:     #070d1f;
+      --bg2:    #0c1428;
+      --bg3:    #0f1a30;
+      --card:   rgba(255,255,255,0.04);
+      --border: rgba(99,172,255,0.12);
+      --accent: #4facfe;
+      --accent2:#7c6af7;
+      --green:  #10b981;
+      --red:    #f87171;
+      --yellow: #f59e0b;
+      --text:   #e2e8f0;
+      --muted:  #8892a4;
+      --white:  #ffffff;
+      --r:      16px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── TYPOGRAPHY ── */
+    .gradient-text {
+      background: linear-gradient(135deg, #4facfe 0%, #7c6af7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    h1, h2, h3 { line-height: 1.2; font-weight: 700; }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+    section { padding: 96px 0; }
+    section:nth-child(even) { background: var(--bg2); }
+
+    /* ── SECTION HEADER ── */
+    .s-label {
+      display: inline-block;
+      background: rgba(79,172,254,0.08);
+      border: 1px solid rgba(79,172,254,0.25);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+    .s-title {
+      font-size: clamp(28px, 4vw, 44px);
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+    .s-sub {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 580px;
+      line-height: 1.7;
+    }
+    .s-head { margin-bottom: 60px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(7,13,31,0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--white);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-cta {
+      background: linear-gradient(135deg, #4facfe, #7c6af7) !important;
+      color: #fff !important;
+      padding: 10px 22px !important;
+      border-radius: 8px !important;
+      font-weight: 600 !important;
+    }
+    .burger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .burger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all .3s;
+    }
+
+    /* Mobile menu */
+    .mob-menu {
+      display: none;
+      position: fixed;
+      top: 57px; left: 0; right: 0;
+      background: rgba(7,13,31,0.97);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px;
+      z-index: 99;
+    }
+    .mob-menu.open { display: block; }
+    .mob-menu ul { list-style: none; display: flex; flex-direction: column; gap: 0; }
+    .mob-menu ul a {
+      display: block;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 16px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+      font-weight: 500;
+    }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: 140px 0 80px;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 55% at 50% -5%, rgba(79,172,254,0.14) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 85% 55%, rgba(124,106,247,0.10) 0%, transparent 50%),
+        var(--bg);
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(99,172,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99,172,255,0.035) 1px, transparent 1px);
+      background-size: 64px 64px;
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 780px; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(79,172,254,0.08);
+      border: 1px solid rgba(79,172,254,0.22);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 18px;
+      border-radius: 100px;
+      margin-bottom: 32px;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: blink 2s infinite;
+    }
+    @keyframes blink {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:.4; transform:scale(1.4); }
+    }
+    .hero-tag {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      margin-bottom: 18px;
+    }
+    .hero-title {
+      font-size: clamp(38px, 6vw, 72px);
+      color: var(--white);
+      margin-bottom: 24px;
+      letter-spacing: -1.5px;
+    }
+    .hero-desc {
+      font-size: clamp(16px, 2vw, 19px);
+      color: var(--muted);
+      max-width: 540px;
+      margin-bottom: 48px;
+      line-height: 1.75;
+    }
+    .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+    .btn-prim {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #4facfe 0%, #7c6af7 100%);
+      color: #fff;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 16px 32px;
+      border-radius: 12px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 28px rgba(79,172,254,.32);
+    }
+    .btn-prim:hover { transform: translateY(-2px); box-shadow: 0 8px 36px rgba(79,172,254,.44); }
+    .btn-sec {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-weight: 500;
+      font-size: 16px;
+      padding: 16px 32px;
+      border-radius: 12px;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: background .2s, border-color .2s;
+    }
+    .btn-sec:hover { background: rgba(255,255,255,.10); border-color: rgba(99,172,255,.3); }
+    .hero-stats {
+      display: flex;
+      gap: 48px;
+      margin-top: 72px;
+      padding-top: 48px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .hstat-num {
+      font-size: 34px;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -1px;
+    }
+    .hstat-num em { color: var(--accent); font-style: normal; }
+    .hstat-lbl { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    /* ── CARDS BASE ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 32px;
+      transition: border-color .2s, transform .25s, box-shadow .25s;
+    }
+    .card:hover {
+      border-color: rgba(79,172,254,.3);
+      transform: translateY(-5px);
+      box-shadow: 0 14px 44px rgba(79,172,254,.08);
+    }
+    .card-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    .ci-red    { background: rgba(248,113,113,.10); }
+    .ci-blue   { background: rgba(79,172,254,.10); }
+    .ci-purple { background: rgba(124,106,247,.10); }
+    .ci-green  { background: rgba(16,185,129,.10); }
+    .ci-yellow { background: rgba(245,158,11,.10); }
+    .card-title { font-size: 18px; font-weight: 600; color: var(--white); margin-bottom: 10px; }
+    .card-text  { font-size: 15px; color: var(--muted); line-height: 1.75; }
+
+    /* ── GRIDS ── */
+    .g3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+    .g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; }
+    .g2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; }
+
+    /* ── PROBLEMS ── */
+    .prob-card { position: relative; overflow: hidden; }
+    .prob-card::before {
+      content:''; position:absolute; top:0;left:0;right:0;
+      height:3px;
+      background: linear-gradient(90deg, #ef4444, #f87171);
+    }
+    .prob-stat {
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--red);
+      margin-bottom: 8px;
+      letter-spacing: -.5px;
+    }
+
+    /* ── SERVICES ── */
+    .svc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 40px 32px;
+      text-align: center;
+      transition: all .25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .svc-card.hot {
+      border-color: rgba(79,172,254,.38);
+      background: rgba(79,172,254,.04);
+    }
+    .svc-card.hot::after {
+      content: 'Популярный';
+      position: absolute;
+      top: 18px; right: -26px;
+      background: linear-gradient(135deg, #4facfe, #7c6af7);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 5px 36px;
+      transform: rotate(45deg);
+    }
+    .svc-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(79,172,254,.4);
+      box-shadow: 0 16px 48px rgba(79,172,254,.10);
+    }
+    .svc-icon  { font-size: 40px; margin-bottom: 20px; display: block; }
+    .svc-title { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 12px; }
+    .svc-desc  { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.7; }
+    .svc-list  { list-style: none; text-align: left; margin-bottom: 32px; }
+    .svc-list li {
+      font-size: 14px;
+      color: var(--text);
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .svc-list li:last-child { border-bottom: none; }
+    .svc-list li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
+
+    /* ── SOLUTIONS ── */
+    .sol-card { position: relative; overflow: hidden; }
+    .sol-card::before {
+      content:''; position:absolute; top:0;left:0;right:0;
+      height:3px;
+      background: linear-gradient(90deg, #4facfe, #7c6af7);
+    }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .about-ava {
+      width: 112px; height: 112px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4facfe, #7c6af7);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 44px;
+      margin-bottom: 28px;
+      box-shadow: 0 0 52px rgba(79,172,254,.28);
+    }
+    .about-name { font-size: 26px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+    .about-role { font-size: 14px; color: var(--accent); margin-bottom: 22px; font-weight: 500; }
+    .about-text { font-size: 15px; color: var(--muted); line-height: 1.8; margin-bottom: 28px; }
+    .about-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .astat {
+      text-align: center;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 12px;
+    }
+    .astat-num { font-size: 26px; font-weight: 800; color: var(--white); margin-bottom: 4px; }
+    .astat-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+    .skill-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 28px;
+    }
+    .skill-card-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 24px;
+    }
+    .skill-row { margin-bottom: 18px; }
+    .skill-row:last-child { margin-bottom: 0; }
+    .skill-info { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .skill-name { font-size: 14px; color: var(--text); }
+    .skill-pct  { font-size: 13px; color: var(--accent); font-weight: 600; }
+    .skill-bar  { height: 5px; background: rgba(255,255,255,.06); border-radius: 3px; overflow: hidden; }
+    .skill-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg,#4facfe,#7c6af7); }
+
+    /* ── TESTIMONIALS ── */
+    .testi-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 32px;
+    }
+    .stars { color: #f59e0b; font-size: 13px; margin-bottom: 18px; letter-spacing: 2px; }
+    .testi-text {
+      font-size: 15px; color: var(--text);
+      line-height: 1.75; margin-bottom: 24px; font-style: italic;
+    }
+    .testi-text::before { content: '\201C'; color: var(--accent); font-size: 22px; font-style:normal; }
+    .testi-text::after  { content: '\201D'; color: var(--accent); font-size: 22px; font-style:normal; }
+    .testi-author { display: flex; align-items: center; gap: 12px; }
+    .testi-ava {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg,#4facfe,#7c6af7);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    .testi-name { font-size: 14px; font-weight: 600; color: var(--white); }
+    .testi-role { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* ── CONTACT ── */
+    #contact {
+      background: linear-gradient(135deg, rgba(79,172,254,.06), rgba(124,106,247,.06));
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+    .form-group { margin-bottom: 20px; }
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+    input[type=text], input[type=tel], input[type=email], textarea, select {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: border-color .2s, background .2s;
+    }
+    input:focus, textarea:focus {
+      border-color: var(--accent);
+      background: rgba(79,172,254,.05);
+    }
+    input::placeholder, textarea::placeholder { color: rgba(136,146,164,.45); }
+    textarea { resize: vertical; min-height: 120px; }
+    .consent-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 24px; }
+    .consent-row input[type=checkbox] { width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; accent-color: var(--accent); }
+    .consent-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .consent-text a { color: var(--accent); text-decoration: none; }
+    .consent-text a:hover { text-decoration: underline; }
+    .contact-items { display: flex; flex-direction: column; gap: 22px; }
+    .ci-row { display: flex; align-items: flex-start; gap: 16px; }
+    .ci-ico {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      background: rgba(79,172,254,.10);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .ci-lbl { font-size: 11px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .6px; }
+    .ci-val { font-size: 15px; color: var(--text); font-weight: 500; }
+
+    /* ── 152-FZ ── */
+    #privacy { background: var(--bg3); padding: 72px 0; }
+    .priv-box {
+      background: rgba(255,255,255,.025);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: var(--r);
+      padding: 48px;
+    }
+    .priv-title { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+    .priv-sub   { font-size: 13px; color: var(--muted); margin-bottom: 40px; }
+    .priv-grid  { display: grid; grid-template-columns: repeat(3,1fr); gap: 32px; margin-bottom: 40px; }
+    .priv-block-title {
+      font-size: 11px; font-weight: 700; color: var(--accent);
+      text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 12px;
+    }
+    .priv-block-text { font-size: 13px; color: var(--muted); line-height: 1.85; }
+    .priv-block-text ul { padding-left: 16px; }
+    .priv-block-text li { margin-bottom: 5px; }
+    .priv-hr { height: 1px; background: var(--border); margin: 36px 0; }
+    .priv-full { font-size: 13px; color: var(--muted); line-height: 1.9; }
+    .priv-full p { margin-bottom: 14px; }
+    .priv-full p:last-child { margin-bottom: 0; }
+    .priv-full strong { color: var(--text); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bg);
+      padding: 36px 0;
+      border-top: 1px solid var(--border);
+    }
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-logo { font-size: 16px; font-weight: 800; color: var(--white); text-decoration: none; }
+    .footer-logo span { color: var(--accent); }
+    .footer-links { display: flex; gap: 20px; list-style: none; flex-wrap: wrap; }
+    .footer-links a { color: var(--muted); font-size: 13px; text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-copy { font-size: 12px; color: var(--muted); }
+
+    /* ── SCROLL TOP ── */
+    .scroll-top {
+      position: fixed; bottom: 28px; right: 28px;
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg,#4facfe,#7c6af7);
+      color: #fff; border: none; cursor: pointer;
+      font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transform: translateY(16px);
+      transition: all .3s;
+      z-index: 50;
+      box-shadow: 0 4px 18px rgba(79,172,254,.32);
+    }
+    .scroll-top.vis { opacity: 1; transform: translateY(0); }
+
+    /* ── ABOUT PHOTO ── */
+    .about-ava {
+      width: 128px; height: 128px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-bottom: 32px;
+      background: #dde3ea;
+      /* 3 золотых кольца */
+      border: 2.5px solid #D4AF37;
+      box-shadow:
+        0 0 0 5px rgba(212,175,55,.55),
+        0 0 0 9px rgba(212,175,55,.28),
+        0 0 0 13px rgba(212,175,55,.10),
+        0 0 36px rgba(212,175,55,.22);
+    }
+    .about-ava img { width:100%; height:100%; object-fit:cover; display:block; }
+
+    /* ── CALCULATOR ── */
+    .calc-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 28px;
+    }
+    .calc-title { font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+    .calc-sub   { font-size: 12px; color: var(--muted); margin-bottom: 24px; }
+    .calc-row   { margin-bottom: 18px; }
+    .calc-row-top { display: flex; justify-content: space-between; margin-bottom: 7px; }
+    .calc-lbl { font-size: 13px; color: var(--text); }
+    .calc-val { font-size: 13px; color: var(--accent); font-weight: 700; min-width: 80px; text-align: right; }
+    input[type=range] {
+      width: 100%; -webkit-appearance: none; appearance: none;
+      height: 5px; background: rgba(255,255,255,.07);
+      border-radius: 3px; outline: none; border: none; padding: 0; cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: linear-gradient(135deg,#4facfe,#7c6af7);
+      cursor: pointer; box-shadow: 0 2px 8px rgba(79,172,254,.4);
+      transition: transform .15s;
+    }
+    input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.25); }
+    input[type=range]::-moz-range-thumb {
+      width: 18px; height: 18px; border-radius: 50%;
+      background: linear-gradient(135deg,#4facfe,#7c6af7);
+      cursor: pointer; border: none;
+    }
+    .calc-results {
+      margin-top: 20px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+    }
+    .calc-res-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .calc-res-row:last-child { border-bottom: none; border-top: 1px solid rgba(79,172,254,.18); padding-top: 12px; margin-top: 4px; }
+    .calc-res-lbl { font-size: 12px; color: var(--muted); }
+    .calc-res-val { font-size: 14px; font-weight: 700; }
+    .crv-red    { color: var(--red); }
+    .crv-green  { color: var(--green); }
+    .crv-accent { color: var(--accent); }
+
+    /* ── SOCIAL ICONS ── */
+    .social-icons { display: flex; gap: 10px; margin-top: 32px; }
+    .s-btn {
+      width: 46px; height: 46px; border-radius: 12px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none;
+      transition: background .2s, border-color .2s, transform .2s, box-shadow .2s;
+      flex-shrink: 0;
+    }
+    .s-btn svg { width: 22px; height: 22px; fill: var(--muted); transition: fill .2s; }
+    .s-btn:hover { transform: translateY(-3px); }
+    .s-tg:hover   { background:#2CA5E0; border-color:#2CA5E0; box-shadow:0 6px 18px rgba(44,165,224,.35); }
+    .s-mail:hover { background:#EA4335; border-color:#EA4335; box-shadow:0 6px 18px rgba(234,67,53,.35); }
+    .s-ph:hover   { background:var(--green); border-color:var(--green); box-shadow:0 6px 18px rgba(16,185,129,.35); }
+    .s-tg:hover svg, .s-mail:hover svg, .s-ph:hover svg { fill:#fff; }
+
+    /* ci-row кликабельный */
+    .ci-link { text-decoration: none; color: var(--text); transition: color .2s; }
+    .ci-link:hover { color: var(--accent); }
+    .ci-ico-a {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: rgba(79,172,254,.10);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0; text-decoration: none;
+      transition: background .2s, transform .2s;
+    }
+    .ci-ico-a:hover { background: rgba(79,172,254,.22); transform: scale(1.1); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .g4 { grid-template-columns: repeat(2,1fr); }
+      .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+      .priv-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 768px) {
+      section { padding: 72px 0; }
+      .g3, .g2 { grid-template-columns: 1fr; }
+      .g4       { grid-template-columns: 1fr; }
+      .priv-grid { grid-template-columns: 1fr; }
+      .hero-stats { gap: 28px; }
+      .nav-links { display: none; }
+      .burger { display: flex; }
+      .priv-box { padding: 28px 20px; }
+      .footer-inner { flex-direction: column; text-align: center; }
+      .footer-links { justify-content: center; }
+    }
+    @media (max-width: 480px) {
+      .hero-actions { flex-direction: column; }
+      .btn-prim, .btn-sec { width: 100%; justify-content: center; }
+      .hero-stats { flex-direction: column; gap: 20px; }
+      .about-stats { grid-template-columns: repeat(3,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════ NAV ══════ -->
+<nav>
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#hero" class="nav-logo">Digital<span>Edge</span></a>
+      <ul class="nav-links">
+        <li><a href="#problems">Проблемы</a></li>
+        <li><a href="#services">Услуги</a></li>
+        <li><a href="#solutions">Результаты</a></li>
+        <li><a href="#about">Обо мне</a></li>
+        <li><a href="#testimonials">Отзывы</a></li>
+        <li><a href="#contact" class="nav-cta">Связаться</a></li>
+      </ul>
+      <button class="burger" id="burger" aria-label="Меню">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Мобильное меню -->
+<div class="mob-menu" id="mobMenu">
+  <ul>
+    <li><a href="#problems" class="ml">Проблемы</a></li>
+    <li><a href="#services"  class="ml">Услуги</a></li>
+    <li><a href="#solutions" class="ml">Результаты</a></li>
+    <li><a href="#about"     class="ml">Обо мне</a></li>
+    <li><a href="#testimonials" class="ml">Отзывы</a></li>
+    <li><a href="#contact"   class="ml">Связаться →</a></li>
+  </ul>
+</div>
+
+<!-- ══════ HERO ══════ -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge">Для экспертов и предпринимателей</div>
+      <p class="hero-tag">Цифровая система</p>
+      <h1 class="hero-title">Система, которая<br><span class="gradient-text">работает за вас</span></h1>
+      <p class="hero-desc">Автоматизируйте рутину, масштабируйте продажи и создайте цифровую экосистему, которая приносит результат 24/7 — без вашего постоянного участия.</p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn-prim">Получить консультацию →</a>
+        <a href="#about"   class="btn-sec">Узнать больше</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hstat-num">500<em>+</em></div>
+          <div class="hstat-lbl">Клиентов</div>
+        </div>
+        <div>
+          <div class="hstat-num">7<em> лет</em></div>
+          <div class="hstat-lbl">Опыта в автоматизации</div>
+        </div>
+        <div>
+          <div class="hstat-num"><em>×</em>3</div>
+          <div class="hstat-lbl">Средний рост дохода</div>
+        </div>
+        <div>
+          <div class="hstat-num">3<em> мес</em></div>
+          <div class="hstat-lbl">До первых результатов</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ PROBLEMS ══════ -->
+<section id="problems">
+  <div class="container">
+    <div class="s-head">
+      <span class="s-label">Диагностика</span>
+      <h2 class="s-title">Что вы теряете каждый день</h2>
+      <p class="s-sub">Без выстроенной цифровой системы бизнес работает на 30% своего потенциала</p>
+    </div>
+    <div class="g3">
+      <div class="card prob-card">
+        <div class="card-icon ci-red">💸</div>
+        <div class="prob-stat">—300 000 ₽</div>
+        <div class="card-title">Упущенная выручка</div>
+        <div class="card-text">Ежемесячно теряется на неавтоматизированных процессах, потерянных заявках и клиентах, которые не получили ответ вовремя.</div>
+      </div>
+      <div class="card prob-card">
+        <div class="card-icon ci-red">⏳</div>
+        <div class="prob-stat">80%</div>
+        <div class="card-title">Время на рутину</div>
+        <div class="card-text">До 80% рабочего времени уходит на повторяющиеся задачи, которые давно должна выполнять автоматика, а не вы лично.</div>
+      </div>
+      <div class="card prob-card">
+        <div class="card-icon ci-red">📉</div>
+        <div class="prob-stat">1 из 3</div>
+        <div class="card-title">Потеря клиентов</div>
+        <div class="card-text">Каждый третий потенциальный клиент уходит к конкурентам — просто потому что его вовремя не зацепили, не ответили, не напомнили.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SERVICES ══════ -->
+<section id="services">
+  <div class="container">
+    <div class="s-head">
+      <span class="s-label">Услуги</span>
+      <h2 class="s-title">Что я делаю для вас</h2>
+      <p class="s-sub">Три направления, которые закрывают 90% задач по росту и автоматизации бизнеса</p>
+    </div>
+    <div class="g3">
+      <!-- Услуга 1 -->
+      <div class="svc-card">
+        <span class="svc-icon">🚀</span>
+        <div class="svc-title">Автоворонка продаж</div>
+        <div class="svc-desc">Настраиваю воронку, которая сама прогревает, квалифицирует и закрывает клиентов — без вашего участия в рутине</div>
+        <ul class="svc-list">
+          <li>Анализ пути клиента</li>
+          <li>Серия прогревающих писем / сообщений</li>
+          <li>Автоматические напоминания</li>
+          <li>CRM и аналитика</li>
+          <li>Подключение мессенджеров</li>
+        </ul>
+        <a href="#contact" class="btn-sec" style="width:100%;justify-content:center;">Обсудить →</a>
+      </div>
+      <!-- Услуга 2 — популярная -->
+      <div class="svc-card hot">
+        <span class="svc-icon">⚡</span>
+        <div class="svc-title">Цифровая экосистема</div>
+        <div class="svc-desc">Строю полную инфраструктуру: лендинги, боты, CRM, аналитика — всё связано и работает как единый механизм</div>
+        <ul class="svc-list">
+          <li>Landing page / сайт</li>
+          <li>Чат-бот + автоответчик</li>
+          <li>CRM под ваш процесс</li>
+          <li>Дашборд с ключевыми метриками</li>
+          <li>Интеграция всех сервисов</li>
+        </ul>
+        <a href="#contact" class="btn-prim" style="width:100%;justify-content:center;">Старт →</a>
+      </div>
+      <!-- Услуга 3 -->
+      <div class="svc-card">
+        <span class="svc-icon">📊</span>
+        <div class="svc-title">Стратегия и аудит</div>
+        <div class="svc-desc">Диагностирую текущие процессы, нахожу точки роста и строю дорожную карту внедрения цифровых инструментов</div>
+        <ul class="svc-list">
+          <li>Аудит текущих процессов</li>
+          <li>Карта точек роста</li>
+          <li>Стратегия автоматизации</li>
+          <li>Приоритизация задач</li>
+          <li>Сопровождение 1 месяц</li>
+        </ul>
+        <a href="#contact" class="btn-sec" style="width:100%;justify-content:center;">Обсудить →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SOLUTIONS ══════ -->
+<section id="solutions">
+  <div class="container">
+    <div class="s-head">
+      <span class="s-label">Результаты</span>
+      <h2 class="s-title">Что вы получите</h2>
+      <p class="s-sub">Проверенная система — уже помогла сотням предпринимателей</p>
+    </div>
+    <div class="g4">
+      <div class="card sol-card">
+        <div class="card-icon ci-blue">🤖</div>
+        <div class="card-title">Автоматизация продаж</div>
+        <div class="card-text">Воронки на автопилоте — заявки обрабатываются и квалифицируются без вашего участия, в любое время суток.</div>
+      </div>
+      <div class="card sol-card">
+        <div class="card-icon ci-green">📈</div>
+        <div class="card-title">Рост дохода ×3</div>
+        <div class="card-text">200–300% роста выручки за первые 3 месяца — за счёт устранения потерь в воронке и системной работы с клиентами.</div>
+      </div>
+      <div class="card sol-card">
+        <div class="card-icon ci-purple">🔗</div>
+        <div class="card-title">Масштабирование</div>
+        <div class="card-text">Расширяете бизнес без пропорционального увеличения команды — система берёт на себя всю операционку.</div>
+      </div>
+      <div class="card sol-card">
+        <div class="card-icon ci-yellow">🎯</div>
+        <div class="card-title">Полный контроль</div>
+        <div class="card-text">Аналитика и дашборды в реальном времени — видите все ключевые метрики и управляете бизнесом по данным.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ ABOUT ══════ -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div>
+        <div class="about-ava"><img src="iam110626.png" alt="Владимир Кирьяков"></div>
+        <div class="about-name">Эксперт по<br>цифровым системам</div>
+        <div class="about-role">Автоматизация · Воронки · Рост дохода</div>
+        <p class="about-text">7 лет помогаю предпринимателям и экспертам выстраивать цифровые системы, которые работают без постоянного контроля. Мой подход — не набор разрозненных инструментов, а целостная экосистема под ваш конкретный бизнес.</p>
+        <p class="about-text">Работал с нишами: онлайн-образование, консалтинг, e-commerce, услуги B2B. Знаю, где теряются деньги — и как вернуть их системно.</p>
+        <div class="about-stats">
+          <div class="astat">
+            <div class="astat-num" style="color:var(--accent)">500+</div>
+            <div class="astat-lbl">Клиентов</div>
+          </div>
+          <div class="astat">
+            <div class="astat-num" style="color:var(--accent2)">7 лет</div>
+            <div class="astat-lbl">Опыта</div>
+          </div>
+          <div class="astat">
+            <div class="astat-num" style="color:var(--green)">×3</div>
+            <div class="astat-lbl">Ср. рост</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="calc-card">
+          <div class="calc-title">🧮 Калькулятор экономии</div>
+          <div class="calc-sub">Подберите параметры — увидите реальные цифры</div>
+
+          <div class="calc-row">
+            <div class="calc-row-top">
+              <span class="calc-lbl">Заявок в месяц</span>
+              <span class="calc-val" id="v_leads">50</span>
+            </div>
+            <input type="range" id="s_leads" min="10" max="500" value="50" step="10" oninput="calcUpdate()">
+          </div>
+
+          <div class="calc-row">
+            <div class="calc-row-top">
+              <span class="calc-lbl">Минут на обработку заявки</span>
+              <span class="calc-val" id="v_mins">30 мин</span>
+            </div>
+            <input type="range" id="s_mins" min="5" max="120" value="30" step="5" oninput="calcUpdate()">
+          </div>
+
+          <div class="calc-row">
+            <div class="calc-row-top">
+              <span class="calc-lbl">Ваша ставка (₽/час)</span>
+              <span class="calc-val" id="v_rate">3 000 ₽</span>
+            </div>
+            <input type="range" id="s_rate" min="500" max="20000" value="3000" step="500" oninput="calcUpdate()">
+          </div>
+
+          <div class="calc-row">
+            <div class="calc-row-top">
+              <span class="calc-lbl">Средний чек клиента (₽)</span>
+              <span class="calc-val" id="v_check">30 000 ₽</span>
+            </div>
+            <input type="range" id="s_check" min="5000" max="300000" value="30000" step="5000" oninput="calcUpdate()">
+          </div>
+
+          <div class="calc-row">
+            <div class="calc-row-top">
+              <span class="calc-lbl">Текущая конверсия</span>
+              <span class="calc-val" id="v_conv">15%</span>
+            </div>
+            <input type="range" id="s_conv" min="3" max="50" value="15" step="1" oninput="calcUpdate()">
+          </div>
+
+          <div class="calc-results">
+            <div class="calc-res-row">
+              <span class="calc-res-lbl">⏰ Рутины в месяц</span>
+              <span class="calc-res-val crv-red" id="r_hours">25 ч/мес</span>
+            </div>
+            <div class="calc-res-row">
+              <span class="calc-res-lbl">💸 Стоимость рутины</span>
+              <span class="calc-res-val crv-red" id="r_cost">75 000 ₽/мес</span>
+            </div>
+            <div class="calc-res-row">
+              <span class="calc-res-lbl">📈 Прирост выручки после автоматизации</span>
+              <span class="calc-res-val crv-green" id="r_rev">+90 000 ₽/мес</span>
+            </div>
+            <div class="calc-res-row">
+              <span class="calc-res-lbl">🔄 Окупаемость системы (≈120 000 ₽)</span>
+              <span class="calc-res-val crv-accent" id="r_roi">1.8 мес</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ TESTIMONIALS ══════ -->
+<section id="testimonials">
+  <div class="container">
+    <div class="s-head">
+      <span class="s-label">Отзывы</span>
+      <h2 class="s-title">Что говорят клиенты</h2>
+      <p class="s-sub">Реальные результаты людей, с которыми я работал</p>
+    </div>
+    <div class="g3">
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">За 2 месяца внедрили воронку и CRM. Количество заявок выросло в 2,5 раза, а я наконец перестал сидеть в телефоне 24/7. Система сама ведёт клиентов до покупки.</p>
+        <div class="testi-author">
+          <div class="testi-ava">А</div>
+          <div>
+            <div class="testi-name">Александр М.</div>
+            <div class="testi-role">Онлайн-школа · 3 млн/мес</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">Скептически отнёсся к автоматизации — думал, это не для моей ниши. Через 3 месяца выручка выросла на 240%. Рекомендую без оговорок.</p>
+        <div class="testi-author">
+          <div class="testi-ava">Е</div>
+          <div>
+            <div class="testi-name">Екатерина В.</div>
+            <div class="testi-role">Консалтинг · Юридические услуги</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">Помог выстроить полную цифровую систему с нуля. Теперь есть время на развитие, а не операционку. Команда сократилась — прибыль выросла.</p>
+        <div class="testi-author">
+          <div class="testi-ava">М</div>
+          <div>
+            <div class="testi-name">Михаил Т.</div>
+            <div class="testi-role">E-commerce · Масштабирование</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ CONTACT ══════ -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div>
+        <span class="s-label">Связаться</span>
+        <h2 class="s-title" style="margin-top:16px;">Начните<br>с консультации</h2>
+        <p style="color:var(--muted);font-size:16px;line-height:1.75;margin:24px 0 40px;">Расскажите о своей задаче — разберём ситуацию, покажу конкретные точки роста для вашего бизнеса. Первая консультация бесплатна.</p>
+        <div class="contact-items">
+          <div class="ci-row">
+            <a href="mailto:allnewgorizonti@gmail.com" class="ci-ico-a">✉️</a>
+            <div>
+              <div class="ci-lbl">Email</div>
+              <a href="mailto:allnewgorizonti@gmail.com" class="ci-link ci-val">allnewgorizonti@gmail.com</a>
+            </div>
+          </div>
+          <div class="ci-row">
+            <a href="https://t.me/kiryakov_vladimir" target="_blank" rel="noopener" class="ci-ico-a">✈️</a>
+            <div>
+              <div class="ci-lbl">Telegram</div>
+              <a href="https://t.me/kiryakov_vladimir" target="_blank" rel="noopener" class="ci-link ci-val">@kiryakov_vladimir</a>
+            </div>
+          </div>
+          <div class="ci-row">
+            <a href="tel:+79951231722" class="ci-ico-a">📞</a>
+            <div>
+              <div class="ci-lbl">Телефон</div>
+              <a href="tel:+79951231722" class="ci-link ci-val">+7 (995) 123-17-22</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Социальные иконки -->
+        <div class="social-icons">
+          <!-- Telegram -->
+          <a href="https://t.me/kiryakov_vladimir" target="_blank" rel="noopener" class="s-btn s-tg" title="Telegram">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.19 13.975l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.958.584z"/>
+            </svg>
+          </a>
+          <!-- Email -->
+          <a href="mailto:allnewgorizonti@gmail.com" class="s-btn s-mail" title="Email">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/>
+            </svg>
+          </a>
+          <!-- Телефон -->
+          <a href="tel:+79951231722" class="s-btn s-ph" title="Позвонить">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <form id="leadForm" onsubmit="handleSubmit(event)">
+          <div class="form-group">
+            <label class="form-label" for="name">Имя *</label>
+            <input type="text" id="name" name="name" placeholder="Иван Иванов" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="phone">Телефон *</label>
+            <input type="tel" id="phone" name="phone" placeholder="+7 (___) ___-__-__" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="ivan@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="task">Ваша задача</label>
+            <textarea id="task" name="task" placeholder="Расскажите о бизнесе и главной задаче, которую хотите решить..."></textarea>
+          </div>
+          <div class="consent-row">
+            <input type="checkbox" id="consent" required>
+            <label for="consent" class="consent-text">
+              Я ознакомлен с <a href="#pdpolicy">Политикой обработки персональных данных</a> и даю согласие на обработку моих персональных данных
+            </label>
+          </div>
+          <button type="submit" id="submitBtn" class="btn-prim" style="width:100%;justify-content:center;">
+            Отправить заявку →
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- якорь для ссылки на политику ПДн -->
+<div id="pdpolicy"></div>
+
+<!-- ══════ FOOTER ══════ -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <a href="#hero" class="footer-logo">Digital<span>Edge</span></a>
+      <ul class="footer-links">
+        <li><a href="#problems">Проблемы</a></li>
+        <li><a href="#services">Услуги</a></li>
+        <li><a href="#about">Обо мне</a></li>
+        <li><a href="#contact">Контакты</a></li>
+        <li><a href="#pdpolicy">Политика ПДн</a></li>
+      </ul>
+      <!-- Иконки соцсетей в футере -->
+      <div class="social-icons" style="margin-top:0;">
+        <a href="https://t.me/kiryakov_vladimir" target="_blank" rel="noopener" class="s-btn s-tg" title="Telegram">
+          <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.19 13.975l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.958.584z"/></svg>
+        </a>
+        <a href="mailto:allnewgorizonti@gmail.com" class="s-btn s-mail" title="Email">
+          <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        </a>
+        <a href="tel:+79951231722" class="s-btn s-ph" title="Позвонить">
+          <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        </a>
+      </div>
+      <div class="footer-copy">© 2026 DigitalEdge. Все права защищены.<br><span style="font-size:11px;opacity:.6;">Персональные данные обрабатываются в соответствии с ФЗ № 152 от 27.07.2006</span></div>
+    </div>
+  </div>
+</footer>
+
+<!-- Кнопка наверх -->
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Наверх">↑</button>
+
+<script>
+  // Бургер-меню
+  const burger  = document.getElementById('burger');
+  const mobMenu = document.getElementById('mobMenu');
+  burger.addEventListener('click', () => mobMenu.classList.toggle('open'));
+  document.querySelectorAll('.ml').forEach(l =>
+    l.addEventListener('click', () => mobMenu.classList.remove('open'))
+  );
+
+  // Кнопка «наверх»
+  const scrollTop = document.getElementById('scrollTop');
+  window.addEventListener('scroll', () =>
+    scrollTop.classList.toggle('vis', window.scrollY > 400)
+  );
+
+  // Отправка формы (заглушка — подключите ваш обработчик)
+  function handleSubmit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    btn.textContent = '✓ Заявка принята!';
+    btn.style.background = 'linear-gradient(135deg,#10b981,#059669)';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.textContent = 'Отправить заявку →';
+      btn.style.background = '';
+      btn.disabled = false;
+      e.target.reset();
+    }, 3000);
+  }
+
+  // Калькулятор экономии
+  function fmt(n) { return Math.round(n).toLocaleString('ru'); }
+  function calcUpdate() {
+    const leads = +document.getElementById('s_leads').value;
+    const mins  = +document.getElementById('s_mins').value;
+    const rate  = +document.getElementById('s_rate').value;
+    const check = +document.getElementById('s_check').value;
+    const conv  = +document.getElementById('s_conv').value;
+
+    document.getElementById('v_leads').textContent = leads;
+    document.getElementById('v_mins').textContent  = mins + ' мин';
+    document.getElementById('v_rate').textContent  = fmt(rate) + ' ₽';
+    document.getElementById('v_check').textContent = fmt(check) + ' ₽';
+    document.getElementById('v_conv').textContent  = conv + '%';
+
+    const hoursPerMonth = (leads * mins) / 60;
+    const routineCost   = hoursPerMonth * rate;
+    // Автоматизация поднимает конверсию в среднем на 8-12 пп (берём 10)
+    const convBoost     = Math.min(conv + 10, 80);
+    const addClients    = leads * (convBoost - conv) / 100;
+    const addRevenue    = addClients * check;
+    const systemCost    = 120000; // средняя цена системы по рынку
+    const monthlyGain   = routineCost + addRevenue;
+    const roiMonths     = monthlyGain > 0 ? (systemCost / monthlyGain).toFixed(1) : '—';
+
+    document.getElementById('r_hours').textContent = Math.round(hoursPerMonth) + ' ч/мес';
+    document.getElementById('r_cost').textContent  = fmt(routineCost) + ' ₽/мес';
+    document.getElementById('r_rev').textContent   = '+' + fmt(addRevenue) + ' ₽/мес';
+    document.getElementById('r_roi').textContent   = roiMonths + ' мес';
+  }
+  calcUpdate(); // инициализация при загрузке
+
+  // Подсветка активного пункта меню при скролле
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 90) cur = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + cur
+        ? 'var(--white)' : '';
+    });
+  });
+</script>
+
+</body>
+</html>
