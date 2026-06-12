@@ -97,33 +97,9 @@
       text-decoration: none;
       display: flex;
       align-items: center;
-      gap: 10px;
+      transition: opacity .2s;
     }
-    .nav-logo-photo {
-      width: 34px; height: 34px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--accent);
-      flex-shrink: 0;
-    }
-    .nav-logo-text {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.1;
-    }
-    .nav-logo-name {
-      font-size: 13px;
-      font-weight: 800;
-      color: var(--white);
-      letter-spacing: -0.3px;
-    }
-    .nav-logo-title {
-      font-size: 9px;
-      font-weight: 500;
-      color: var(--accent);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
+    .nav-logo:hover { opacity: .8; }
     .nav-links { display: flex; gap: 20px; list-style: none; align-items: center; }
     .nav-links a {
       color: var(--muted);
@@ -722,12 +698,26 @@
 <nav>
   <div class="container">
     <div class="nav-inner">
-      <a href="#hero" class="nav-logo">
-        <img src="iam100626.png" alt="Владимир Кирьяков" class="nav-logo-photo">
-        <div class="nav-logo-text">
-          <span class="nav-logo-name">Владимир Кирьяков</span>
-          <span class="nav-logo-title">Цифровые системы дохода</span>
-        </div>
+      <a href="#hero" class="nav-logo" aria-label="На главную">
+        <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="nlg" x1="0" y1="0" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#4facfe"/>
+              <stop offset="1" stop-color="#7c6af7"/>
+            </linearGradient>
+          </defs>
+          <!-- Фон: скруглённый квадрат -->
+          <rect width="38" height="38" rx="10" fill="url(#nlg)"/>
+          <!-- Три узла — растущий тренд (AI + доход) -->
+          <circle cx="10" cy="27" r="3" fill="white"/>
+          <circle cx="19" cy="18" r="3" fill="white"/>
+          <circle cx="28" cy="11" r="3" fill="white"/>
+          <!-- Линии соединений -->
+          <line x1="13" y1="25.2" x2="16" y2="19.8" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <line x1="22" y1="16.2" x2="25" y2="12.8" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <!-- Маленькая стрелка вверх у верхнего узла -->
+          <path d="M28 8 L28 6 M26.5 7.5 L28 6 L29.5 7.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </a>
       <ul class="nav-links">
         <li><a href="#problems">Проблемы</a></li>
