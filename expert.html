@@ -552,20 +552,29 @@
     /* ── FOOTER ── */
     footer {
       background: var(--bg);
-      padding: 36px 0;
+      padding: 40px 0 32px;
       border-top: 1px solid var(--border);
     }
     .footer-inner {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 16px;
+      gap: 18px;
+      text-align: center;
     }
-    .footer-logo { font-size: 16px; font-weight: 800; color: var(--white); text-decoration: none; }
-    .footer-logo span { color: var(--accent); }
-    .footer-links { display: flex; gap: 20px; list-style: none; flex-wrap: wrap; }
-    .footer-links a { color: var(--muted); font-size: 13px; text-decoration: none; transition: color .2s; }
+    .footer-links {
+      display: flex;
+      gap: 8px 24px;
+      list-style: none;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .footer-links a {
+      color: var(--muted);
+      font-size: 13px;
+      text-decoration: none;
+      transition: color .2s;
+    }
     .footer-links a:hover { color: var(--white); }
     .footer-copy { font-size: 12px; color: var(--muted); }
 
@@ -709,8 +718,7 @@
       .nav-links { display: none; }
       .burger { display: flex; }
       .priv-box { padding: 28px 20px; }
-      .footer-inner { flex-direction: column; text-align: center; }
-      .footer-links { justify-content: center; }
+      .footer-links { gap: 6px 16px; }
     }
     @media (max-width: 480px) {
       .hero-actions { flex-direction: column; }
@@ -1156,36 +1164,15 @@
 <footer>
   <div class="container">
     <div class="footer-inner">
-      <a href="#hero" class="footer-logo" aria-label="На главную" style="display:inline-flex;align-items:center;">
-        <svg width="32" height="32" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs><linearGradient id="flg2" x1="0" y1="0" x2="38" y2="38" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#4facfe"/><stop offset="1" stop-color="#7c6af7"/>
-          </linearGradient></defs>
-          <rect width="38" height="38" rx="10" fill="url(#flg2)"/>
-          <path d="M 19 10 A 9 9 0 1 1 10 19" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          <path d="M 7.5 16.5 L 10 19 L 12.5 16.5" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
       <ul class="footer-links">
         <li><a href="#problems">Проблемы</a></li>
         <li><a href="#services">Услуги</a></li>
+        <li><a href="#solutions">Результаты</a></li>
         <li><a href="#about">Обо мне</a></li>
+        <li><a href="#testimonials">Отзывы</a></li>
         <li><a href="#contact">Контакты</a></li>
-        <li><a href="privacy-policy.html">Политика ПДн</a></li>
       </ul>
-      <!-- Иконки соцсетей в футере -->
-      <div class="social-icons" style="margin-top:0;">
-        <a href="https://t.me/kiryakov_vladimir" target="_blank" rel="noopener" class="s-btn s-tg" title="Telegram">
-          <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.19 13.975l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.958.584z"/></svg>
-        </a>
-        <a href="mailto:allnewgorizonti@gmail.com" class="s-btn s-mail" title="Email">
-          <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
-        </a>
-        <a href="tel:+79951231722" class="s-btn s-ph" title="Позвонить">
-          <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-        </a>
-      </div>
-      <div class="footer-copy">© 2026 Кирьяков Владимир Николаевич. Все права защищены.<br><span style="font-size:11px;opacity:.6;">Персональные данные обрабатываются в соответствии с ФЗ № 152 от 27.07.2006</span></div>
+      <div class="footer-copy">© 2026 Кирьяков Владимир Николаевич. Все права защищены.</div>
     </div>
   </div>
 </footer>
