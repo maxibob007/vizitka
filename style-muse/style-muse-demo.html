@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Style Muse — ИИ-стилист и виртуальная примерка</title>
+  <meta name="description" content="ИИ подбирает 3 стиля под вашу внешность, показывает виртуальную примерку и помогает найти одежду на Wildberries">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:      #FAFBFF;
+    --bg2:     #F3F0FF;
+    --white:   #FFFFFF;
+    --grad:    linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+    --primary: #8B5CF6;
+    --pink:    #EC4899;
+    --text:    #1E1B4B;
+    --muted:   #6B7280;
+    --border:  rgba(139,92,246,0.15);
+    --r:       20px;
+    --sh:      0 4px 20px rgba(139,92,246,0.10);
+    --sh-h:    0 16px 48px rgba(139,92,246,0.22);
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  img { -webkit-user-drag: none; pointer-events: none; }
+
+  /* ── DEMO BANNER ── */
+  .demo-banner {
+    background: var(--grad);
+    color: #fff;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    padding: 9px 16px;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 300;
+  }
+
+  /* ── BASE ── */
+  .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 96px 0; }
+  .section-alt { background: var(--bg2); }
+
+  .gradient-text {
+    background: var(--grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .s-label {
+    display: inline-block;
+    background: rgba(139,92,246,.08);
+    border: 1px solid rgba(139,92,246,.22);
+    color: var(--primary);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 6px 16px; border-radius: 100px;
+    margin-bottom: 20px;
+  }
+  .s-title { font-size: clamp(26px,4vw,42px); font-weight: 800; margin-bottom: 16px; }
+  .s-sub   { font-size: 17px; color: var(--muted); max-width: 560px; line-height: 1.7; }
+  .s-head  { margin-bottom: 60px; }
+  .center  { text-align: center; }
+  .center .s-sub { margin: 0 auto; }
+
+  /* ── BUTTONS ── */
+  .btn-prim {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--grad); color: #fff;
+    font-weight: 700; font-size: 16px;
+    padding: 16px 36px; border-radius: 100px;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 8px 28px rgba(139,92,246,.38);
+  }
+  .btn-prim:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(139,92,246,.5); }
+
+  .btn-sec {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #fff; color: var(--primary);
+    font-weight: 600; font-size: 15px;
+    padding: 14px 30px; border-radius: 100px;
+    text-decoration: none; border: 2px solid var(--border);
+    cursor: pointer; transition: all .2s;
+  }
+  .btn-sec:hover { border-color: var(--primary); box-shadow: 0 4px 16px rgba(139,92,246,.15); }
+
+  .btn-white {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #fff; color: var(--primary);
+    font-weight: 700; font-size: 16px;
+    padding: 18px 40px; border-radius: 100px;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 8px 32px rgba(0,0,0,.18);
+  }
+  .btn-white:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(0,0,0,.26); }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 36px; left: 0; right: 0;
+    z-index: 200;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 0;
+  }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; }
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none; font-size: 20px; font-weight: 800; color: var(--text);
+  }
+  .nav-logo-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: var(--grad);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500; transition: color .2s; }
+  .nav-links a:hover { color: var(--primary); }
+  .nav-right { display: flex; align-items: center; gap: 16px; }
+  .nav-login { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .2s; }
+  .nav-login:hover { color: var(--primary); }
+  .nav-cta {
+    background: var(--grad); color: #fff !important;
+    padding: 10px 24px; border-radius: 100px;
+    font-size: 14px; font-weight: 700; text-decoration: none;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 16px rgba(139,92,246,.32);
+  }
+  .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(139,92,246,.46); }
+
+  .burger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+  .burger span { display: block; width: 24px; height: 2px; background: var(--text); border-radius: 2px; transition: all .3s; }
+
+  .mob-menu {
+    display: none; position: fixed;
+    top: 92px; left: 0; right: 0;
+    background: #fff; border-bottom: 1px solid var(--border);
+    padding: 20px 24px; z-index: 199;
+    box-shadow: 0 8px 32px rgba(0,0,0,.08);
+  }
+  .mob-menu.open { display: block; }
+  .mob-menu ul { list-style: none; display: flex; flex-direction: column; }
+  .mob-menu ul a {
+    display: block; color: var(--text); text-decoration: none;
+    font-size: 16px; padding: 14px 0;
+    border-bottom: 1px solid var(--border); font-weight: 500;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 170px 0 96px;
+    position: relative; overflow: hidden;
+  }
+  .blob {
+    position: absolute; border-radius: 50%;
+    filter: blur(90px); opacity: .22; pointer-events: none;
+  }
+  .blob-1 { width: 600px; height: 600px; background: var(--primary); top: -180px; right: -80px; }
+  .blob-2 { width: 380px; height: 380px; background: var(--pink); bottom: -80px; left: -40px; }
+
+  .hero-inner {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 64px; align-items: center; position: relative; z-index: 1;
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(139,92,246,.08); border: 1px solid rgba(139,92,246,.22);
+    color: var(--primary); font-size: 13px; font-weight: 600;
+    padding: 8px 18px; border-radius: 100px; margin-bottom: 28px;
+  }
+  .hero-badge::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--primary); animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.5)} }
+
+  .hero-title { font-size: clamp(34px,5.5vw,62px); font-weight: 900; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 24px; }
+  .hero-desc { font-size: clamp(16px,2vw,18px); color: var(--muted); max-width: 460px; margin-bottom: 40px; line-height: 1.75; }
+  .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 36px; }
+
+  .hero-proof { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--muted); }
+  .avatars { display: flex; }
+  .avatars span {
+    width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff;
+    background: var(--grad);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: #fff; font-weight: 700; margin-left: -7px;
+  }
+  .avatars span:first-child { margin-left: 0; }
+  .stars-s { color: #F59E0B; font-size: 12px; }
+
+  /* Gallery */
+  .hero-gallery { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 12px; height: 480px; }
+  .gitem { border-radius: 18px; overflow: hidden; position: relative; }
+  .gitem-main { grid-row: span 2; }
+  .gph {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 16px; position: relative;
+  }
+  .gph-gray   { background: linear-gradient(160deg,#e2e8f0,#cbd5e1); }
+  .gph-violet { background: linear-gradient(160deg,#7C3AED,#4C1D95); }
+  .gph-pink   { background: linear-gradient(160deg,#EC4899,#9D174D); }
+
+  .g-chip {
+    position: absolute; top: 12px; left: 12px;
+    background: rgba(255,255,255,.95);
+    color: var(--text); font-size: 11px; font-weight: 800;
+    padding: 4px 12px; border-radius: 100px;
+  }
+  .g-chip.after { background: var(--grad); color: #fff; }
+  .g-label { font-size: 13px; font-weight: 700; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.4); position: relative; z-index: 1; }
+  .g-label-gray { color: #64748b; }
+
+  /* silhouette */
+  .sil { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); opacity: .15; }
+
+  /* ── HOW IT WORKS ── */
+  .steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 28px; position: relative; }
+  .steps::before {
+    content: ''; position: absolute; top: 38px; left: 12%; right: 12%; height: 2px;
+    background: linear-gradient(90deg,var(--primary),var(--pink)); opacity: .18;
+  }
+  .step {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--r); padding: 32px 20px;
+    text-align: center; box-shadow: var(--sh);
+    transition: transform .3s, box-shadow .3s;
+  }
+  .step:hover { transform: translateY(-6px); box-shadow: var(--sh-h); }
+  .step-n {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--grad); color: #fff;
+    font-size: 20px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 18px;
+    box-shadow: 0 6px 20px rgba(139,92,246,.38);
+  }
+  .step-ico { font-size: 26px; margin-bottom: 10px; }
+  .step-t { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .step-d { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+  /* ── PRICING ── */
+  .pricing { display: grid; grid-template-columns: repeat(5,1fr); gap: 14px; }
+
+  .pc {
+    background: #fff; border: 2px solid var(--border);
+    border-radius: var(--r); padding: 28px 18px;
+    text-align: center; transition: all .3s; position: relative; overflow: hidden;
+  }
+  .pc:hover { border-color: var(--primary); transform: translateY(-4px); box-shadow: var(--sh-h); }
+  .pc.hot { border-color: var(--primary); transform: scale(1.04); box-shadow: 0 20px 60px rgba(139,92,246,.24); }
+
+  .hot-badge {
+    position: absolute; top: 0; left: 0; right: 0;
+    background: var(--grad); color: #fff;
+    font-size: 10px; font-weight: 800; letter-spacing: 1.5px;
+    text-transform: uppercase; padding: 6px; text-align: center;
+  }
+  .pc.hot .pc-body { padding-top: 12px; }
+
+  .pc-gens { font-size: 34px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+  .pc-lbl  { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+  .pc-price {
+    font-size: 28px; font-weight: 900;
+    background: var(--grad);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 4px;
+  }
+  .pc-per { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+  .pc-disc {
+    display: inline-block;
+    background: rgba(236,72,153,.1); color: var(--pink);
+    font-size: 12px; font-weight: 700;
+    padding: 3px 10px; border-radius: 100px; margin-bottom: 20px;
+  }
+  .pc-disc.empty { visibility: hidden; }
+
+  .pc-btn {
+    display: block; width: 100%; background: var(--grad);
+    color: #fff; font-weight: 700; font-size: 14px;
+    padding: 12px; border-radius: 100px;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 16px rgba(139,92,246,.32);
+  }
+  .pc-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(139,92,246,.46); }
+  .pc-btn.out {
+    background: transparent; border: 2px solid var(--border);
+    color: var(--primary); box-shadow: none;
+  }
+  .pc-btn.out:hover { border-color: var(--primary); background: rgba(139,92,246,.05); }
+
+  .free-note { text-align: center; margin-top: 32px; font-size: 15px; color: var(--muted); }
+  .free-note strong { color: var(--primary); }
+
+  /* ── TESTIMONIALS ── */
+  .testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+  .tc {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--r); padding: 28px; box-shadow: var(--sh);
+    transition: transform .3s, box-shadow .3s;
+  }
+  .tc:hover { transform: translateY(-4px); box-shadow: var(--sh-h); }
+  .stars { color: #F59E0B; font-size: 15px; margin-bottom: 16px; letter-spacing: 2px; }
+  .tc-text {
+    font-size: 15px; color: var(--text);
+    line-height: 1.75; margin-bottom: 20px; font-style: italic;
+  }
+  .tc-text::before { content: '\201C'; color: var(--primary); font-size: 24px; font-style: normal; line-height: 0; vertical-align: -8px; margin-right: 2px; }
+  .tc-author { display: flex; align-items: center; gap: 12px; }
+  .tc-ava {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--grad); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; flex-shrink: 0;
+  }
+  .tc-name { font-size: 14px; font-weight: 700; }
+  .tc-role { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* ── CTA ── */
+  #cta {
+    background: var(--grad); padding: 96px 0; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  #cta::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 80% at 50% 0%, rgba(255,255,255,.08), transparent);
+  }
+  #cta .container { position: relative; z-index: 1; }
+  .cta-title { font-size: clamp(26px,4vw,46px); font-weight: 900; color: #fff; margin-bottom: 16px; }
+  .cta-desc { font-size: 18px; color: rgba(255,255,255,.82); max-width: 480px; margin: 0 auto 40px; }
+
+  /* ── FAQ ── */
+  .faq-list { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+  .fi { background: #fff; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; box-shadow: var(--sh); transition: box-shadow .2s; }
+  .fi:hover { box-shadow: 0 8px 32px rgba(139,92,246,.14); }
+  .fi-q {
+    width: 100%; padding: 20px 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: none; border: none; cursor: pointer; text-align: left;
+    font-size: 16px; font-weight: 600; color: var(--text);
+    font-family: 'Inter', sans-serif;
+  }
+  .fi-ico {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(139,92,246,.08);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: var(--primary);
+    flex-shrink: 0; margin-left: 16px;
+    transition: transform .3s, background .2s;
+  }
+  .fi.open .fi-ico { transform: rotate(45deg); background: var(--grad); color: #fff; }
+  .fi-a {
+    max-height: 0; overflow: hidden;
+    transition: max-height .4s ease, padding .3s;
+    padding: 0 24px;
+    font-size: 15px; color: var(--muted); line-height: 1.75;
+  }
+  .fi.open .fi-a { max-height: 300px; padding-bottom: 22px; }
+
+  /* ── FOOTER ── */
+  footer { background: var(--text); padding: 60px 0 32px; color: rgba(255,255,255,.55); }
+  .ft {
+    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 48px;
+    margin-bottom: 40px; padding-bottom: 40px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .f-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; margin-bottom: 16px; }
+  .f-logo-ico {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: var(--grad);
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  .f-logo-txt { font-size: 18px; font-weight: 800; color: #fff; }
+  .f-desc { font-size: 14px; line-height: 1.7; max-width: 280px; }
+  .f-legal { font-size: 11px; margin-top: 12px; color: rgba(255,255,255,.28); line-height: 1.6; }
+  .f-col-t { font-size: 11px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 18px; }
+  .f-links { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+  .f-links a { color: rgba(255,255,255,.52); text-decoration: none; font-size: 14px; transition: color .2s; }
+  .f-links a:hover { color: #fff; }
+  .fb { display: flex; justify-content: space-between; align-items: center; font-size: 12px; flex-wrap: wrap; gap: 8px; }
+  .fb-legal { font-size: 11px; color: rgba(255,255,255,.22); max-width: 520px; line-height: 1.6; }
+
+  /* ── SCROLL TOP ── */
+  .scroll-top {
+    position: fixed; bottom: 28px; right: 28px;
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--grad); color: #fff; border: none; cursor: pointer;
+    font-size: 18px; display: flex; align-items: center; justify-content: center;
+    opacity: 0; transform: translateY(16px);
+    transition: all .3s; z-index: 50;
+    box-shadow: 0 4px 20px rgba(139,92,246,.42);
+  }
+  .scroll-top.vis { opacity: 1; transform: translateY(0); }
+
+  /* ── EXPIRED OVERLAY ── */
+  .exp-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15,23,42,.97);
+    backdrop-filter: blur(8px);
+    z-index: 999;
+    display: none; align-items: center; justify-content: center;
+    padding: 32px;
+  }
+  .exp-box {
+    background: #fff; border-radius: 24px;
+    padding: 48px; max-width: 440px; text-align: center;
+    box-shadow: 0 32px 80px rgba(0,0,0,.4);
+  }
+  .exp-ico { font-size: 56px; margin-bottom: 20px; }
+  .exp-t { font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 12px; }
+  .exp-d { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 28px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1024px) {
+    .pricing { grid-template-columns: repeat(3,1fr); }
+    .pc.hot { transform: scale(1.02); }
+    .steps { grid-template-columns: repeat(2,1fr); }
+    .steps::before { display: none; }
+    .ft { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 768px) {
+    section { padding: 72px 0; }
+    .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+    .hero-gallery { max-width: 380px; margin: 0 auto; height: 380px; }
+    .pricing { grid-template-columns: repeat(2,1fr); }
+    .testi-grid { grid-template-columns: 1fr; }
+    .nav-links, .nav-right { display: none; }
+    .burger { display: flex; }
+    .ft { grid-template-columns: 1fr; gap: 32px; }
+    .fb { flex-direction: column; align-items: flex-start; }
+  }
+  @media (max-width: 480px) {
+    .pricing { grid-template-columns: 1fr; }
+    .pc.hot { transform: scale(1); }
+    .steps { grid-template-columns: 1fr; }
+    .hero-actions { flex-direction: column; }
+    .btn-prim, .btn-sec { width: 100%; justify-content: center; }
+    #hero { padding: 150px 0 72px; }
+  }
+  </style>
+</head>
+<body>
+
+<!-- DEMO BANNER -->
+<div class="demo-banner">🎨 ДЕМО-ВЕРСИЯ · Действует до 16 июня 2026 · Только для ознакомления · Скачивание заблокировано</div>
+
+<!-- NAV -->
+<nav>
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#hero" class="nav-logo" aria-label="На главную">
+        <div class="nav-logo-icon">✨</div>
+        Style Muse
+      </a>
+      <ul class="nav-links">
+        <li><a href="#how">Как работает</a></li>
+        <li><a href="#pricing">Тарифы</a></li>
+        <li><a href="#reviews">Отзывы</a></li>
+        <li><a href="#faq">Вопросы</a></li>
+      </ul>
+      <div class="nav-right">
+        <a href="#" class="nav-login">Войти</a>
+        <a href="#pricing" class="nav-cta">Попробовать бесплатно</a>
+      </div>
+      <button class="burger" id="burger" aria-label="Меню"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="mob-menu" id="mobMenu">
+  <ul>
+    <li><a href="#how" class="ml">Как работает</a></li>
+    <li><a href="#pricing" class="ml">Тарифы</a></li>
+    <li><a href="#reviews" class="ml">Отзывы</a></li>
+    <li><a href="#faq" class="ml">Вопросы</a></li>
+    <li><a href="#pricing" class="ml">Попробовать бесплатно →</a></li>
+  </ul>
+</div>
+
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="container">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-badge">ИИ-стилист 24/7</div>
+        <h1 class="hero-title">Передай образец —<br>получи <span class="gradient-text">свой стиль</span></h1>
+        <p class="hero-desc">ИИ подберёт 3 стиля под вашу внешность, покажет как это выглядит и поможет найти вещи на Wildberries</p>
+        <div class="hero-actions">
+          <a href="#pricing" class="btn-prim">✨ Попробовать бесплатно</a>
+          <a href="#how" class="btn-sec">Как это работает</a>
+        </div>
+        <div class="hero-proof">
+          <div class="avatars">
+            <span>А</span><span>М</span><span>Е</span><span>О</span>
+          </div>
+          <div>
+            <div class="stars-s">★★★★★</div>
+            <div>5 бесплатных генераций при регистрации</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-gallery">
+        <div class="gitem gitem-main">
+          <div class="gph gph-gray" style="height:100%;">
+            <div class="g-chip">До</div>
+            <svg class="sil" width="110" height="220" viewBox="0 0 110 220">
+              <ellipse cx="55" cy="36" rx="26" ry="26" fill="#94a3b8"/>
+              <rect x="26" y="68" width="58" height="88" rx="8" fill="#94a3b8"/>
+              <rect x="18" y="72" width="17" height="68" rx="8" fill="#94a3b8"/>
+              <rect x="75" y="72" width="17" height="68" rx="8" fill="#94a3b8"/>
+              <rect x="30" y="153" width="22" height="65" rx="8" fill="#94a3b8"/>
+              <rect x="58" y="153" width="22" height="65" rx="8" fill="#94a3b8"/>
+            </svg>
+            <span class="g-label g-label-gray">Ваше фото</span>
+          </div>
+        </div>
+        <div class="gitem">
+          <div class="gph gph-violet" style="height:100%;">
+            <div class="g-chip after">После</div>
+            <span class="g-label">Smart casual</span>
+          </div>
+        </div>
+        <div class="gitem">
+          <div class="gph gph-pink" style="height:100%;">
+            <div class="g-chip after">После</div>
+            <span class="g-label">Вечерний</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ HOW IT WORKS ══ -->
+<section id="how" class="section-alt">
+  <div class="container">
+    <div class="s-head center">
+      <span class="s-label">Процесс</span>
+      <h2 class="s-title">4 шага до нового образа</h2>
+      <p class="s-sub">Загрузите фото и получите готовые стили с примеркой за несколько минут</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">1</div>
+        <div class="step-ico">📸</div>
+        <div class="step-t">Загрузи фото</div>
+        <div class="step-d">Фото в полный рост с хорошим освещением. Подходит любой фон.</div>
+      </div>
+      <div class="step">
+        <div class="step-n">2</div>
+        <div class="step-ico">🤖</div>
+        <div class="step-t">ИИ подберёт стили</div>
+        <div class="step-d">Анализирует тип внешности и предлагает 3 персональных варианта.</div>
+      </div>
+      <div class="step">
+        <div class="step-n">3</div>
+        <div class="step-ico">👗</div>
+        <div class="step-t">Примерь виртуально</div>
+        <div class="step-d">Реалистичная визуализация — видите как выглядит именно на вас.</div>
+      </div>
+      <div class="step">
+        <div class="step-n">4</div>
+        <div class="step-ico">🛍️</div>
+        <div class="step-t">Купи на Wildberries</div>
+        <div class="step-d">Прямые ссылки на понравившиеся вещи. Одним кликом.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRICING ══ -->
+<section id="pricing">
+  <div class="container">
+    <div class="s-head center">
+      <span class="s-label">Тарифы</span>
+      <h2 class="s-title">Без подписки — только нужное</h2>
+      <p class="s-sub">Покупаете ровно столько генераций, сколько хотите. Чем больше — тем дешевле.</p>
+    </div>
+    <div class="pricing">
+      <div class="pc">
+        <div class="pc-body">
+          <div class="pc-gens">1</div>
+          <div class="pc-lbl">генерация</div>
+          <div class="pc-price">49 ₽</div>
+          <div class="pc-per">49 ₽/шт</div>
+          <div class="pc-disc empty">—</div>
+          <a href="https://svoedelo.payform.ru/" target="_blank" rel="noopener" class="pc-btn out">Купить</a>
+        </div>
+      </div>
+      <div class="pc">
+        <div class="pc-body">
+          <div class="pc-gens">5</div>
+          <div class="pc-lbl">генераций</div>
+          <div class="pc-price">199 ₽</div>
+          <div class="pc-per">40 ₽/шт</div>
+          <div class="pc-disc">−19%</div>
+          <a href="https://svoedelo.payform.ru/" target="_blank" rel="noopener" class="pc-btn">Купить</a>
+        </div>
+      </div>
+      <div class="pc hot">
+        <div class="hot-badge">★ Популярный</div>
+        <div class="pc-body">
+          <div class="pc-gens">10</div>
+          <div class="pc-lbl">генераций</div>
+          <div class="pc-price">349 ₽</div>
+          <div class="pc-per">35 ₽/шт</div>
+          <div class="pc-disc">−29%</div>
+          <a href="https://svoedelo.payform.ru/" target="_blank" rel="noopener" class="pc-btn">Купить</a>
+        </div>
+      </div>
+      <div class="pc">
+        <div class="pc-body">
+          <div class="pc-gens">25</div>
+          <div class="pc-lbl">генераций</div>
+          <div class="pc-price">749 ₽</div>
+          <div class="pc-per">30 ₽/шт</div>
+          <div class="pc-disc">−39%</div>
+          <a href="https://svoedelo.payform.ru/" target="_blank" rel="noopener" class="pc-btn">Купить</a>
+        </div>
+      </div>
+      <div class="pc">
+        <div class="pc-body">
+          <div class="pc-gens">50</div>
+          <div class="pc-lbl">генераций</div>
+          <div class="pc-price">1 249 ₽</div>
+          <div class="pc-per">25 ₽/шт</div>
+          <div class="pc-disc">−49%</div>
+          <a href="https://svoedelo.payform.ru/" target="_blank" rel="noopener" class="pc-btn">Купить</a>
+        </div>
+      </div>
+    </div>
+    <p class="free-note">🎁 <strong>5 бесплатных генераций</strong> при регистрации · Оплата через ЮKassa · Без подписки</p>
+  </div>
+</section>
+
+<!-- ══ TESTIMONIALS ══ -->
+<section id="reviews" class="section-alt">
+  <div class="container">
+    <div class="s-head center">
+      <span class="s-label">Отзывы</span>
+      <h2 class="s-title">Довольные клиентки</h2>
+      <p class="s-sub">Реальные истории людей, которые уже нашли свой стиль</p>
+    </div>
+    <div class="testi-grid">
+      <div class="tc">
+        <div class="stars">★★★★★</div>
+        <p class="tc-text">Никогда не думала, что ИИ так точно подберёт стиль. Streetwear образ — просто огонь, всё купила на Wildberries за один вечер!</p>
+        <div class="tc-author">
+          <div class="tc-ava">А</div>
+          <div><div class="tc-name">Анастасия К.</div><div class="tc-role">Москва · 5 генераций</div></div>
+        </div>
+      </div>
+      <div class="tc">
+        <div class="stars">★★★★★</div>
+        <p class="tc-text">Давно хотела обновить гардероб, но не знала с чего начать. Style Muse показала три варианта — теперь знаю точно что покупать.</p>
+        <div class="tc-author">
+          <div class="tc-ava">М</div>
+          <div><div class="tc-name">Мария Т.</div><div class="tc-role">Екатеринбург · 10 генераций</div></div>
+        </div>
+      </div>
+      <div class="tc">
+        <div class="stars">★★★★★</div>
+        <p class="tc-text">Вечерний стиль от ИИ просто восхитительный. Муж не узнал на вечеринке 😄 Всё подобрала на WB, ещё и скидки поймала!</p>
+        <div class="tc-author">
+          <div class="tc-ava">Е</div>
+          <div><div class="tc-name">Елена В.</div><div class="tc-role">СПб · 25 генераций</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section id="cta">
+  <div class="container">
+    <h2 class="cta-title">Готовы найти свой стиль?</h2>
+    <p class="cta-desc">Начните с 5 бесплатных генераций прямо сейчас — регистрация за 30 секунд</p>
+    <a href="https://svoedelo.payform.ru/" target="_blank" rel="noopener" class="btn-white">✨ Попробовать бесплатно</a>
+  </div>
+</section>
+
+<!-- ══ FAQ ══ -->
+<section id="faq">
+  <div class="container">
+    <div class="s-head center">
+      <span class="s-label">Вопросы</span>
+      <h2 class="s-title">Часто спрашивают</h2>
+    </div>
+    <div class="faq-list">
+      <div class="fi open">
+        <button class="fi-q">Что такое Style Muse?<span class="fi-ico">+</span></button>
+        <div class="fi-a">Style Muse — ИИ-стилист, который анализирует вашу внешность по фото и подбирает 3 персональных образа. Каждый образ можно примерить виртуально и сразу купить подобранные вещи на Wildberries.</div>
+      </div>
+      <div class="fi">
+        <button class="fi-q">Как работает виртуальная примерка?<span class="fi-ico">+</span></button>
+        <div class="fi-a">Вы загружаете фото в полный рост. ИИ определяет тип вашей внешности, подбирает одежду и накладывает её на ваше фото — реалистично, с учётом пропорций. Результат готов за 1–2 минуты.</div>
+      </div>
+      <div class="fi">
+        <button class="fi-q">Сколько стоит одна генерация?<span class="fi-ico">+</span></button>
+        <div class="fi-a">От 25 до 49 ₽ за генерацию — зависит от выбранного пакета. Чем больше пакет, тем дешевле каждая попытка. Плюс 5 бесплатных генераций при регистрации.</div>
+      </div>
+      <div class="fi">
+        <button class="fi-q">Какие способы оплаты доступны?<span class="fi-ico">+</span></button>
+        <div class="fi-a">Оплата через ЮKassa: банковские карты Visa/Mastercard/МИР, СБП (быстрые платежи), электронные кошельки. Оплата безопасна и моментальна.</div>
+      </div>
+      <div class="fi">
+        <button class="fi-q">Можно ли вернуть деньги?<span class="fi-ico">+</span></button>
+        <div class="fi-a">Да. Если технически что-то пошло не так и генерация не выполнилась — возвращаем в течение 3 рабочих дней. Напишите в поддержку с описанием проблемы.</div>
+      </div>
+      <div class="fi">
+        <button class="fi-q">Мои фото в безопасности?<span class="fi-ico">+</span></button>
+        <div class="fi-a">Да. Фотографии обрабатываются только для генерации образов и не передаются третьим лицам. Обработка данных — в соответствии с ФЗ № 152 «О персональных данных».</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="container">
+    <div class="ft">
+      <div>
+        <a href="#hero" class="f-logo">
+          <div class="f-logo-ico">✨</div>
+          <span class="f-logo-txt">Style Muse</span>
+        </a>
+        <p class="f-desc">ИИ-стилист, который подбирает образы под вашу внешность и помогает покупать на Wildberries.</p>
+        <p class="f-legal">
+          Самозанятый: Кирьяков Владимир Николаевич<br>
+          Платформа 1SVOEDELO · Оплата: ЮKassa через svoedelo.payform.ru
+        </p>
+      </div>
+      <div>
+        <div class="f-col-t">Навигация</div>
+        <ul class="f-links">
+          <li><a href="#how">Как работает</a></li>
+          <li><a href="#pricing">Тарифы</a></li>
+          <li><a href="#reviews">Отзывы</a></li>
+          <li><a href="#faq">Вопросы</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="f-col-t">Документы</div>
+        <ul class="f-links">
+          <li><a href="#">Политика конфиденциальности</a></li>
+          <li><a href="#">Публичная оферта</a></li>
+          <li><a href="#">Согласие на обработку ПД</a></li>
+          <li><a href="mailto:allnewgorizonti@gmail.com">Поддержка</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="fb">
+      <div>© 2026 Style Muse · Все права защищены</div>
+      <div class="fb-legal">Сервис не является магазином. Помогает подобрать стиль и направляет на Wildberries. Обработка фотографий — в соответствии с ФЗ № 152 «О персональных данных».</div>
+    </div>
+  </div>
+</footer>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Наверх">↑</button>
+
+<!-- EXPIRED OVERLAY -->
+<div class="exp-overlay" id="expiredOverlay">
+  <div class="exp-box">
+    <div class="exp-ico">⏰</div>
+    <div class="exp-t">Демо-версия устарела</div>
+    <div class="exp-d">Срок действия истёк 16 июня 2026. Свяжитесь с Владимиром Кирьяковым для получения доступа к финальной версии.</div>
+    <a href="https://t.me/kiryakov_vladimir" target="_blank" rel="noopener" class="btn-prim" style="width:100%;justify-content:center;margin-top:8px;">Написать в Telegram →</a>
+  </div>
+</div>
+
+<script>
+  // Проверка срока демо
+  const EXPIRE = new Date('2026-06-16T23:59:59');
+  function checkExpiry() {
+    if (new Date() > EXPIRE) {
+      const o = document.getElementById('expiredOverlay');
+      o.style.display = 'flex';
+    }
+  }
+  checkExpiry();
+  setInterval(checkExpiry, 60000);
+
+  // Защита от скачивания
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('keydown', e => {
+    const k = e.key.toLowerCase();
+    if ((e.ctrlKey || e.metaKey) && ['s','u','p','a'].includes(k)) e.preventDefault();
+  });
+  document.addEventListener('dragstart', e => e.preventDefault());
+
+  // Бургер
+  const burger  = document.getElementById('burger');
+  const mobMenu = document.getElementById('mobMenu');
+  burger.addEventListener('click', () => mobMenu.classList.toggle('open'));
+  document.querySelectorAll('.ml').forEach(l => l.addEventListener('click', () => mobMenu.classList.remove('open')));
+
+  // Кнопка наверх
+  const scrollTopBtn = document.getElementById('scrollTop');
+  window.addEventListener('scroll', () => scrollTopBtn.classList.toggle('vis', window.scrollY > 400));
+
+  // Аккордеон FAQ
+  document.querySelectorAll('.fi-q').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.parentElement;
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.fi').forEach(i => i.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+
+  // Анимация появления блоков
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.step, .pc, .tc, .fi').forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = `opacity .5s ease ${i * 0.07}s, transform .5s ease ${i * 0.07}s`;
+    io.observe(el);
+  });
+</script>
+</body>
+</html>
